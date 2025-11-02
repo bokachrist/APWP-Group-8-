@@ -1,0 +1,262 @@
+{
+    "Monday": [
+        {
+            "log": 1,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 2,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 3,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 4,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 5,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 6,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 7,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 8,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 9,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 10,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        }
+    ],
+    "Tuesday": [
+        {
+            "log": 1,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 2,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 3,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 4,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 5,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 6,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 7,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 8,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 9,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 10,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        }
+    ],
+    "Wednesday": [
+        {
+            "log": 1,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 2,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 3,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 4,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 5,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 6,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 7,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 8,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 9,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 10,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        }
+    ],
+    "Thursday": [
+        {
+            "log": 1,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 2,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 3,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 4,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 5,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 6,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 7,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 8,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 9,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 10,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        }
+    ],
+    "Friday": [
+        {
+            "log": 1,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 2,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 3,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 4,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 5,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 6,
+            "subject": "Math",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 7,
+            "subject": "Physics",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 8,
+            "subject": "History",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 9,
+            "subject": "Turkish Languge",
+            "duration": "25 min study, 5 min break"
+        },
+        {
+            "log": 10,
+            "subject": "Art",
+            "duration": "25 min study, 5 min break"
+        }
+    ]
+}
