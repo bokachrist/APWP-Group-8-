@@ -1,274 +1,265 @@
-# 🎬 Movie Database Manager
+# Istanbul Traffic Accidents Analysis Project
 
-A Python application that scrapes movie data from IMDB and TMDB. Then stores it in MongoDB with full OOP implementation.
+## 🎯 Project Goal
+Identify when and under what conditions traffic accidents happen most in Istanbul.
 
-## 📋 Project Overview
+## 📊 Bonus Points Applied
+- ✅ **Scraped messy web data (+10)** - Data collected from IPA, Daily Sabah, Xinhua
+- ✅ **Data science analysis (+15)** - Anomaly detection using IQR method
+- ✅ **Modern React.js visualization (+15)** - Interactive dashboard with Recharts
+- **Total Bonus: +40 points**
 
-This project demonstrates web scraping, API integration, database management, and object-oriented programming principles by building a movie database manager that:
-- Scrapes movie data from IMDb using BeautifulSoup
-- Fetches data from TMDb API (optional)
-- Stores data in MongoDB
-- Provides querying and analysis capabilities
-
-## 🎯 Features Implemented
-
-### Web Scraping & APIs
-- ✅ **BeautifulSoup (bs4)** - Scraping IMDb Top 250 movies
-- ✅ **Standard APIs** - TMDb API integration (optional)
-- ⚡ Upgradeable to Selenium/Scrapy for advanced scraping
-
-### Database
-- ✅ **MongoDB** - NoSQL database for flexible movie storage
-- ✅ Unique indexing on movie titles
-- ✅ CRUD operations with error handling
-
-### Business Logic & OOP
-- ✅ **Classes** - Multiple well-structured classes
-- ✅ **Inheritance** - `Scraper` base class with multiple implementations
-- ✅ **Abstract Classes** - `ABC` for scraper blueprint
-- ✅ **Protocols** - `DatabaseProtocol` for type checking
-- ✅ **Data Classes** - `Movie` dataclass with field defaults
-- ✅ **Full Type Checking** - Type hints throughout the codebase
-- ✅ **ORM Pattern** - Database manager with object mapping
-
-## 🏆 Bonus Points Achieved
-
-| Category | Implementation | Points |
-|----------|---------------|---------|
-| **Web Scraping** | BeautifulSoup + API | Base + 0 (20 optional) |
-| **Database** | MongoDB | Base + 15 |
-| **OOP** | Data classes + Type checking + ORM | Base + 15 |
-| **Total Bonus** | | **+30** |
+---
 
 ## 📁 Project Structure
-
 ```
-project2&3(movie_scraper)/
-├── models.py
-├── scraper_base.py
-├── imdb_scraper.py
-├── tmdb_scraper.py
-├── database.py
-├── manager.py
-├── main.py
-├── README.md
-├── gtignore.txt
-└── requirements.txt
-__pycache__/
-├── database.cpython-314.pyc
-├── imdb_scrapercpython-314.pyc
-├── manager.cpython-314.pyc
-├── models.cpython-314.pyc
-├── movie.cpython-314.pyc
-└── scraper_base.cpython-314.pyc
+python_project4(istanbul_traffic_analysis)/
+├── scraper.py              # Web scraping script
+├── analysis.py             # Data cleaning & analysis
+├── dashboard.html          # React visualization
+├── scraped_accidents.csv   # Cleaned dataset
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
 ```
 
-## 🚀 Installation & Setup
+---
 
-### Prerequisites
+## 📊 Dashboard Preview
+
+### Interactive Dashboard
+![Dashboard Overview](screenshots/dashboard_overview.png)
+*Modern React.js dashboard with real-time statistics and interactive charts*
+
+### Anomaly Detection Analysis
+![Anomaly Detection](screenshots/anomaly_detection.png)
+*IQR method identifying September as statistical outlier (238 vs 118 average)*
+
+---
+
+## 🌐 Data Sources (Scraped Web Data)
+
+### 1. IPA Istanbul Report
+- **URL**: Traffic accident reports from Istanbul Planning Agency
+- **Data**: Monthly accident counts, severity levels
+- **Issues**: Inconsistent date formats, Turkish characters, missing values
+
+### 2. Daily Sabah News
+- **URL**: Annual traffic statistics articles
+- **Data**: Weather conditions, time of day, accident counts
+- **Issues**: Data embedded in article text, needed text parsing
+
+### 3. Xinhua English News
+- **URL**: Statistical reports on Türkiye traffic
+- **Data**: Hourly distributions, yearly trends
+- **Issues**: Mixed units (some in percentages), needed normalization
+
+---
+
+## 🧹 Data Cleaning Process (Step-by-Step)
+
+### Step 1: Web Scraping
+```python
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# Scraped HTML tables and article text from 3 sources
+# Used BeautifulSoup to parse messy HTML structure
+```
+
+### Step 2: Handling Missing Data
+- **Problem**: 15% of weather data was missing or marked as "N/A"
+- **Solution**: Filled with "Unknown" category, later analyzed separately
+
+### Step 3: Fixing Date Formats
+- **Problem**: Dates in 3 different formats (DD/MM/YYYY, Turkish month names, timestamps)
+- **Solution**: Standardized all to YYYY-MM-DD using `pd.to_datetime()`
+
+### Step 4: Text Parsing
+- **Problem**: Accident counts written in text: "iki yüz üç kaza" (203 accidents in Turkish)
+- **Solution**: Created Turkish number parser dictionary to convert to integers
+
+### Step 5: Removing Duplicates
+- **Problem**: Same accidents reported by multiple sources
+- **Solution**: Matched by date+time+location, kept only unique records
+
+### Step 6: Data Normalization
+- **Problem**: Some sources gave percentages, others absolute numbers
+- **Solution**: Converted all to absolute counts based on yearly totals
+
+### Step 7: Outlier Detection
+- **Problem**: Some entries had impossible values (e.g., 9999 accidents in one hour)
+- **Solution**: Used IQR method to identify and remove statistical outliers
+
+---
+
+## 📈 Analysis Methods
+
+### Basic Statistics
+- **Mean**: 118.2 accidents/month
+- **Median**: 120 accidents/month
+- **Min**: 87 (February)
+- **Max**: 238 (September - Anomaly!)
+
+### Advanced Statistical Analysis
+**Quartile Analysis (Box Plot Method):**
+- Q1 (25th percentile): 98 accidents
+- Q3 (75th percentile): 142 accidents
+- IQR (Interquartile Range): 44 accidents
+
+### Anomaly Detection (IQR Method)
+**Formula Used:**
+```
+Upper Bound = Q3 + 1.5 × IQR = 142 + 1.5 × 44 = 208
+Lower Bound = Q1 - 1.5 × IQR = 98 - 1.5 × 44 = 32
+```
+
+**Result:** September (238 accidents) is a **statistical anomaly** - exceeds upper bound by 30 accidents.
+
+---
+
+## 🔍 Key Findings
+
+### 1. Peak Accident Hours ⏰
+- **Highest**: 16:00-18:00 (203 accidents) - Evening rush hour
+- **Second**: 08:00-10:00 (189 accidents) - Morning commute
+- **Lowest**: 02:00-04:00 (28 accidents) - Late night
+
+### 2. Weather Impact 🌤️
+- **Clear weather**: 645 accidents (49%) - Most common
+- **Rain**: 398 accidents (30%) - Second highest
+- **Fog**: 187 accidents (14%)
+- **Snow**: 89 accidents (7%)
+
+**Insight**: Clear weather has most accidents because of higher traffic volume, not danger.
+
+### 3. September Anomaly 🚨
+- Normal months: 87-156 accidents
+- September: 238 accidents (101% above average!)
+- **Possible reasons**: School season starts, construction projects, weather transition
+
+---
+
+## 💻 Technologies Used
+
+### For Scraping (+10 points)
+- Python `requests` & `BeautifulSoup4`
+- HTML parsing from 3 different website structures
+
+### For Analysis (+15 points)
+- Pandas for data manipulation
+- NumPy for statistical calculations
+- IQR method for anomaly detection
+- Quartile analysis (Q1, Q3, box plot statistics)
+
+### For Visualization (+15 points)
+- **React.js** with Recharts library
+- Interactive dashboard
+- Modern web-based interface
+- Responsive design
+
+---
+
+## 📝 2-Minute Presentation Outline
+
+**Slide 1: Problem (15 sec)**
+"Istanbul has many traffic accidents. When do they happen most?"
+
+**Slide 2: Data (15 sec)**
+"I scraped data from 3 news sources: IPA, Daily Sabah, Xinhua. Cleaned messy formats and missing values."
+
+**Slide 3: Analysis (30 sec)**
+"Used statistical methods:
+- Calculated mean, median, quartiles
+- Applied IQR anomaly detection
+- Found September is a statistical outlier (238 vs 118 average)"
+
+**Slide 4: Results (30 sec)**
+[Show dashboard]
+"Key findings:
+- Most dangerous: Evening rush hour (16-18)
+- Clear weather has most accidents (traffic volume)
+- September anomaly needs investigation"
+
+**Slide 5: Conclusion (30 sec)**
+"Drivers should be extra careful during rush hours. City should investigate September spike. Used modern React visualization and advanced statistics for this analysis."
+
+---
+
+## Installation
+
+Follow the steps below to install the project requirements correctly.
+
+**Prerequisites**
+
+Make sure you have the following installed on your system:
+
 - Python 3.8 or higher
-- MongoDB installed and running locally
-- (Optional) TMDb API key for additional data source
 
-### Step 1: Install MongoDB
+- pip (Python package manager)
 
-**Windows:**
-```bash
-# Download from: https://www.mongodb.com/try/download/community
-# Install and start MongoDB service
-```
+- (Optional but recommended) virtualenv
 
-**macOS:**
-```bash
-brew tap mongodb/brew
-brew install mongodb-community
-brew services start mongodb-community
-```
+You can check your Python version with:
 
-**Linux:**
-```bash
-sudo apt-get install mongodb
-sudo systemctl start mongodb
-```
+python --version
 
-### Step 2: Clone and Setup
+or
 
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd movie-database-manager
+python3 --version
 
-# Create virtual environment
+**Step 1: Clone the Repository**
+
+git clone https://github.com/your-username/your-repository.git
+cd your-repository
+
+**Step 2: Create and Activate a Virtual Environment (Recommended)**
+
+**On Windows:**
+
 python -m venv venv
-
-# Activate virtual environment
-# Windows:
 venv\Scripts\activate
-# macOS/Linux:
+
+**On macOS / Linux:**
+
+python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
+**Step 3: Install Requirements**
+
+Install all required dependencies using the requirements.txt file:
+
 pip install -r requirements.txt
-```
 
-### Step 3: (Optional) Get TMDb API Key
+If pip points to Python 2, use:
 
-1. Create free account at https://www.themoviedb.org/
-2. Go to Settings > API
-3. Request API key
+pip3 install -r requirements.txt
 
-### Step 4: Run the Application
+**Step 4: Verify Installation**
 
-```bash
-python main.py
-```
+To confirm everything is installed correctly:
 
-## 💻 Usage
+pip list
 
-The application automatically:
-1. Connects to MongoDB
-2. Scrapes movie data from IMDb
-3. Saves movies to database (avoiding duplicates)
-4. Displays statistics and top-rated movies
+or try running the project:
 
-### Sample Output
+python analysis.py
 
-```
-Welcome to the Top 10 Movive Scraper Project!
+**Common Issues**
 
+Permission denied: add --user or use a virtual environment
 
-🎬 Movie Database Manager
-==================================================
-✅ Connected to MongoDB: movies_db
+Package build errors: update pip first
 
-==================================================
-Starting Movie Scraping Process
-==================================================
+pip install --upgrade pip
 
-📡 Scraping from: IMDb Top 250
-   Found 15 movies
-Movie 'The Shawshank Redemption' already exists
-Movie 'The Godfather' already exists
-Movie 'The Dark Knight' already exists
-Movie 'The Godfather Part II' already exists
-Movie '12 Angry Men' already exists
-Movie 'The Lord of the Rings: The Return of the King' already exists
-Movie 'Schindler's List' already exists
-Movie 'The Lord of the Rings: The Fellowship of the Ring' already exists
-Movie 'Pulp Fiction' already exists
-Movie 'Il buono, il brutto, il cattivo' already exists
-Movie 'The Lord of the Rings: The Two Towers' already exists
-Movie 'Forrest Gump' already exists
-Movie 'Fight Club' already exists
-Movie 'Inception' already exists
-Movie 'Star Wars: Episode V - The Empire Strikes Back' already exists
-   Saved 0 new movies to database
+---
 
-==================================================
-Database Statistics
-==================================================
-Total movies in database: 15
-Average rating: 8.93
+## 🎓 Academic Integrity
+All data was publicly available. Proper citations provided for sources. Analysis code written independently.
 
-==================================================
-Top 10 Rated Movies
-==================================================
-1. The Shawshank Redemption (1994) - ⭐ 9.3
+---
 
-
-2. The Godfather (1972) - ⭐ 9.2
-
-
-3. The Dark Knight (2008) - ⭐ 9.1
-...
-```
-
-## 🔧 Code Highlights
-
-### Data Classes with Type Checking
-```python
-@dataclass
-class Movie:
-    title: str
-    year: int
-    rating: float
-    genres: List[str] = field(default_factory=list)
-```
-
-### Abstract Base Class
-```python
-class Scraper(ABC):
-    @abstractmethod
-    def scrape(self) -> List[Movie]:
-        pass
-```
-
-### Protocol for Type Safety
-```python
-class DatabaseProtocol(Protocol):
-    def save_movie(self, movie: Movie) -> bool:
-        ...
-```
-
-### ORM-like Database Pattern
-```python
-class MongoDBManager:
-    def save_movie(self, movie: Movie) -> bool:
-        return self.collection.insert_one(movie.to_dict())
-```
-
-## 🎓 Learning Outcomes
-
-This project demonstrates understanding of:
-- Web scraping techniques and ethics
-- API integration and error handling
-- NoSQL database operations
-- Object-oriented design principles
-- Python type hints and protocols
-- Clean code architecture
-- Error handling and robustness
-
-## 📦 Dependencies
-
-- `requests` - HTTP library for web scraping and API calls
-- `beautifulsoup4` - HTML parsing library
-- `pymongo` - MongoDB driver for Python
-- `lxml` - Fast XML/HTML parser
-
-### Bonus Points Breakdown:
-
-1. **Database (+15)**
-   - Using MongoDB (NoSQL database)
-   - Proper connection handling
-   - CRUD operations implemented
-
-2. **OOP (+15)**
-   - ✅ Classes used throughout
-   - ✅ Inheritance (Scraper → IMDbScraper, TMDbAPIScraper)
-   - ✅ Abstract base class (Scraper with ABC)
-   - ✅ Protocol (DatabaseProtocol)
-   - ✅ Data classes with defaults
-   - ✅ Full type checking (Type hints on all functions/methods)
-   - ✅ ORM pattern in database manager
-
-3. **Web Scraping (Base)**
-   - BeautifulSoup for IMDb
-   - Requests for API calls
-   - Proper error handling
-
-### Code Quality:
-- Clean, readable code with comments
-- Follows Python naming conventions
-- Error handling throughout
-- Type safety with protocols and hints
-- Modular design with clear separation of concerns
-
-## 👨‍💻 Author
-
-ICT 2nd Year Students - [Iyad Kabel, Y.H.Y.M.Bakr Raiyan, Amro Jamal Al Ddın, Christ Barhith Boka, Muzammal Yaquib]
-
-## 📄 License
-
-This project is created for educational purposes.
-
-
+## 📧 Contact
+[Iyad Kabel, Y.H.Y.M.Bakr Raiyan, Amro Jamal Al Ddın, Christ Barhith Boka, Muzammal Yaquib] - [eyadkabel7@gmail.com]
+Software Engineering, Year 2

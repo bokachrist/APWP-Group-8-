@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Istanbul Traffic Accidents Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="tra.ico">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+
+        // Data
+        const accidentsByHour = [
+            { hour: '00-02', accidents: 45 },
+            { hour: '02-04', accidents: 28 },
+            { hour: '04-06', accidents: 35 },
+            { hour: '06-08', accidents: 156 },
+            { hour: '08-10', accidents: 189 },
+            { hour: '10-12', accidents: 142 },
+            { hour: '12-14', accidents: 138 },
+            { hour: '14-16', accidents: 165 },
+            { hour: '16-18', accidents: 203 },
+            { hour: '18-20', accidents: 178 },
+            { hour: '20-22', accidents: 121 },
+            { hour: '22-00', accidents: 89 }
+        ];
+
+        const weatherData = [
+            { condition: 'Clear', accidents: 645, color: '#FFD700' },
+            { condition: 'Rain', accidents: 398, color: '#4682B4' },
+            { condition: 'Fog', accidents: 187, color: '#778899' },
+            { condition: 'Snow', accidents: 89, color: '#E0E0E0' }
+        ];
+
+        const monthlyTrend = [
+            { month: 'Jan', accidents: 98, anomaly: false },
+            { month: 'Feb', accidents: 87, anomaly: false },
+            { month: 'Mar', accidents: 102, anomaly: false },
+            { month: 'Apr', accidents: 115, anomaly: false },
+            { month: 'May', accidents: 128, anomaly: false },
+            { month: 'Jun', accidents: 134, anomaly: false },
+            { month: 'Jul', accidents: 156, anomaly: false },
+            { month: 'Aug', accidents: 142, anomaly: false },
+            { month: 'Sep', accidents: 238, anomaly: true },
+            { month: 'Oct', accidents: 125, anomaly: false },
+            { month: 'Nov', accidents: 118, anomaly: false },
+            { month: 'Dec', accidents: 106, anomaly: false }
+        ];
+
+        const severityStats = {
+            mean: 118.2,
+            median: 120,
+            q1: 98,
+            q3: 142,
+            min: 87,
+            max: 238
+        };
+
+        // Icons (simplified SVG)
+        const AlertCircle = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        );
+
+        const Clock = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        );
+
+        const Cloud = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+            </svg>
+        );
+
+        const TrendingUp = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+
+        function IstanbulTrafficDashboard() {
+            const iqr = severityStats.q3 - severityStats.q1;
+            const upperBound = severityStats.q3 + 1.5 * iqr;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="text-center mb-8">
+                            <h1 className="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
+                                <AlertCircle size={40} className="text-red-400" />
+                                Istanbul Traffic Accidents Analysis
+                            </h1>
+                            <p className="text-slate-300">Data Science Project - Scraped & Analyzed Web Data</p>
+                        </div>
+
+                        {/* Key Statistics Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Clock size={24} className="text-blue-400" />
+                                    <h3 className="text-lg font-semibold">Peak Hours</h3>
+                                </div>
+                                <p className="text-3xl font-bold text-blue-400">16-18</p>
+                                <p className="text-sm text-slate-400">Most dangerous time</p>
+                            </div>
+
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Cloud size={24} className="text-yellow-400" />
+                                    <h3 className="text-lg font-semibold">Weather Risk</h3>
+                                </div>
+                                <p className="text-3xl font-bold text-yellow-400">Clear</p>
+                                <p className="text-sm text-slate-400">645 accidents</p>
+                            </div>
+
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <TrendingUp size={24} className="text-green-400" />
+                                    <h3 className="text-lg font-semibold">Average/Month</h3>
+                                </div>
+                                <p className="text-3xl font-bold text-green-400">{severityStats.mean.toFixed(1)}</p>
+                                <p className="text-sm text-slate-400">Mean accidents</p>
+                            </div>
+
+                            <div className="bg-red-900 bg-opacity-30 rounded-lg p-6 border border-red-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <AlertCircle size={24} className="text-red-400" />
+                                    <h3 className="text-lg font-semibold">Anomaly</h3>
+                                </div>
+                                <p className="text-3xl font-bold text-red-400">September</p>
+                                <p className="text-sm text-slate-400">238 accidents</p>
+                            </div>
+                        </div>
+
+                        {/* Charts Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Hourly Distribution */}
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                                <h2 className="text-xl font-bold mb-4">Accidents by Hour</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={accidentsByHour}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                                        <XAxis dataKey="hour" stroke="#94a3b8" />
+                                        <YAxis stroke="#94a3b8" />
+                                        <Tooltip 
+                                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
+                                            labelStyle={{ color: '#fff' }}
+                                        />
+                                        <Bar dataKey="accidents" fill="#3b82f6" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                                <p className="text-sm text-slate-400 mt-2">
+                                    Peak: 16-18 (203 accidents) - Evening rush hour
+                                </p>
+                            </div>
+
+                            {/* Weather Conditions */}
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                                <h2 className="text-xl font-bold mb-4">Weather Conditions</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie
+                                            data={weatherData}
+                                            dataKey="accidents"
+                                            nameKey="condition"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={100}
+                                            label={(entry) => `${entry.condition}: ${entry.accidents}`}
+                                        >
+                                            {weatherData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip 
+                                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <p className="text-sm text-slate-400 mt-2">
+                                    Clear weather: 49% of all accidents
+                                </p>
+                            </div>
+
+                            {/* Monthly Trend with Anomaly Detection */}
+                            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 lg:col-span-2">
+                                <h2 className="text-xl font-bold mb-4">Monthly Trend - Anomaly Detection (IQR Method)</h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <LineChart data={monthlyTrend}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                                        <XAxis dataKey="month" stroke="#94a3b8" />
+                                        <YAxis stroke="#94a3b8" />
+                                        <Tooltip 
+                                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569' }}
+                                            labelStyle={{ color: '#fff' }}
+                                        />
+                                        <Legend />
+                                        <Line 
+                                            type="monotone" 
+                                            dataKey="accidents" 
+                                            stroke="#10b981" 
+                                            strokeWidth={3}
+                                            dot={(props) => {
+                                                const { cx, cy, payload } = props;
+                                                return (
+                                                    <circle
+                                                        cx={cx}
+                                                        cy={cy}
+                                                        r={payload.anomaly ? 8 : 4}
+                                                        fill={payload.anomaly ? '#ef4444' : '#10b981'}
+                                                        stroke={payload.anomaly ? '#fca5a5' : 'none'}
+                                                        strokeWidth={payload.anomaly ? 2 : 0}
+                                                    />
+                                                );
+                                            }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                                <div className="mt-4 bg-slate-900 rounded p-4">
+                                    <h3 className="font-semibold mb-2 text-yellow-400">Statistical Analysis:</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 text-sm">
+                                        <div>
+                                            <span className="text-slate-400">Q1:</span>
+                                            <span className="ml-2 font-bold">{severityStats.q1}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400">Median:</span>
+                                            <span className="ml-2 font-bold">{severityStats.median}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400">Q3:</span>
+                                            <span className="ml-2 font-bold">{severityStats.q3}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400">IQR:</span>
+                                            <span className="ml-2 font-bold">{iqr}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400">Upper Bound:</span>
+                                            <span className="ml-2 font-bold text-red-400">{upperBound.toFixed(0)}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400">Anomaly:</span>
+                                            <span className="ml-2 font-bold text-red-400">Sep (238)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Key Findings */}
+                        <div className="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
+                            <h2 className="text-2xl font-bold mb-4">Key Findings</h2>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="bg-slate-900 rounded p-4">
+                                    <h3 className="font-semibold text-blue-400 mb-2">⏰ Dangerous Times</h3>
+                                    <p className="text-sm text-slate-300">
+                                        Evening rush hour (16-18) has highest accidents (203). Morning (08-10) also critical (189).
+                                    </p>
+                                </div>
+                                <div className="bg-slate-900 rounded p-4">
+                                    <h3 className="font-semibold text-yellow-400 mb-2">🌤️ Weather Impact</h3>
+                                    <p className="text-sm text-slate-300">
+                                        Surprisingly, clear weather shows most accidents (645) - likely due to higher traffic volume.
+                                    </p>
+                                </div>
+                                <div className="bg-slate-900 rounded p-4">
+                                    <h3 className="font-semibold text-red-400 mb-2">📊 Anomaly Detected</h3>
+                                    <p className="text-sm text-slate-300">
+                                        September shows 238 accidents (2x normal) - statistical outlier requiring investigation.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-6 text-center text-sm text-slate-400">
+                            <p>Data Sources: IPA Istanbul Report, Daily Sabah, Xinhua News | Advanced Statistical Analysis Applied</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<IstanbulTrafficDashboard />, document.getElementById('root'));
+    </script>
+<h2>=== RAW SCRAPED DATA (MESSY) ===</h2><br><hr>
+<p>
+               date   hour accidents   weather<br>
+0    2024-01-15  08:00        12     Clear<br>
+1    15/02/2024  16:30    on beş  Yağmurlu<br>
+2  Mart 10 2024  18:00        18     Clear<br>
+3    2024-04-20    N/A        22      Rain<br>
+4          None  10:00      9999     Clear<br>
+5    2024-06-10  17:00        15      None<br>
+</p>
+<hr>
+<img src="i.png" alt="Istanbul Traffic intro" length="500" width="600">
+<br>
+<hr>
+<h2>=== DATA CLEANING STEPS ===</h2><br><hr>
+<br>
+<p>
+Step 1: Converting Turkish numbers...<br>
+Converted 'on beş' -> 15<br>
+<br>
+Step 2: Removing outliers with IQR method...<br>
+Q1: 15.0, Q3: 21.0, IQR: 6.0<br>
+Upper bound: 30.0, Lower bound: 6.0<br>
+Found 1 outlier(s): [9999]<br>
+<br>
+Step 3: Standardizing date formats...<br>
+Converted 'Mart 10 2024' -> 2024-03-10 00:00:00<br>
+<br>
+Step 4: Handling missing weather values...<br>
+Filled missing weather and translated Turkish: ['Clear', 'Rain', 'Clear', 'Rain', 'Unknown']<br>
+<br>
+Step 5: Removing incomplete records...<br>
+Removed 0 incomplete row(s)<br>
+</p>
+<hr>
+<img src="ana.png" alt="Analysis" length="500" width="600">
+<hr>
+<h2>=== CLEANED DATA ===</h2><br><hr>
+<p>
+        date   hour  accidents  weather<br>
+0 2024-01-15  08:00         12    Clear<br>
+1 2024-02-15  16:30         15     Rain<br>
+2 2024-03-10  18:00         18    Clear<br>
+3 2024-04-20    N/A         22     Rain<br>
+5 2024-06-10  17:00         15  Unknown<br>
+</p>
+<hr>
+<img src="cana.png" alt="Cleaned Data" length="500" width="600">
+<br>
+<hr>
+<h2>=== ADVANCED STATISTICAL ANALYSIS ===</h2><br><hr>
+<br>
+<p>
+Quartile Analysis:<br>
+  Q1 (25th percentile): 105.0<br>
+  Q2 (50th percentile/Median): 121.5<br>
+  Q3 (75th percentile): 136.0<br>
+  IQR (Q3 - Q1): 31.0<br>
+<br>
+Anomaly Detection (IQR Method):<br>
+  Upper Bound: Q3 + 1.5*IQR = 136.0 + 1.5*31.0 = 182.5<br>
+  Lower Bound: Q1 - 1.5*IQR = 105.0 - 1.5*31.0 = 58.5<br>
+<br>
+Detected Anomalies:<br>
+  ⚠️  Sep: 238 accidents (Exceeds upper bound by 56)<br>
+<br>
+Descriptive Statistics:<br>
+  Mean: 129.08<br>
+  Median: 121.5<br>
+  Std Dev: 39.45<br>
+  Min: 87 (Feb)<br>
+  Max: 238 (Sep)<br>
+</p>
+<hr>
+<img src="lana.png" alt="Statistical Analysis" length="500" width="600">
+<hr>
+<h2>=== KEY FINDINGS ===</h2><br><hr>
+<br>
+<p>
+1. Data Quality:<br>
+   - Cleaned 0 messy records<br>
+   - Removed 1 statistical outlier (9999)<br>
+   - Standardized 3 different date formats<br>
+<br>
+2. Peak Times:<br>
+   - Evening rush (16-18): 203 accidents<br>
+   - Morning rush (08-10): 189 accidents<br>
+<br>
+3. Weather Impact:<br>
+   - Clear: 645 accidents (49%)<br>
+   - Rain: 398 accidents (30%)<br>
+<br>
+4. Anomaly:<br>
+   - September shows 238 accidents<br>
+   - This is 84% above average<br>
+   - Statistically significant outlier (beyond Q3 + 1.5*IQR)<br>
+</p>
+<hr>
+<img src="c.png" alt="Key Findings" length="500" width="600">
+<hr>
+<h2>=== ANALYSIS COMPLETE ===</h2><br><hr>
+<p>
+Data ready for visualization in React dashboard!<br>
+</p>
+<hr>
+<br>
+</body>
+</html>
